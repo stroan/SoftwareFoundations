@@ -808,20 +808,55 @@ Qed.
 Theorem snoc_append : forall (l:natlist) (n:nat),
   snoc l n = l ++ [n].
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l n. induction l as [| h t].
+    reflexivity.
+    simpl. rewrite -> IHt. reflexivity.
+Qed.
 
+Theorem app_nil : forall l : natlist,
+  l = l ++ [].
+Proof.
+  intros l. induction l as [| h t].
+    reflexivity.
+    simpl. rewrite <- IHt. reflexivity.
+Qed. 
+
+Theorem snoc_app_dist : forall l1 l2 : natlist, forall n : nat,
+  snoc (l1 ++ l2) n = l1 ++ (snoc l2 n).
+Proof.
+  intros l1 l2 n. induction l1 as [| h t].
+    reflexivity.
+    simpl. rewrite -> IHt. reflexivity.
+Qed.
 
 Theorem distr_rev : forall l1 l2 : natlist,
   rev (l1 ++ l2) = (rev l2) ++ (rev l1).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2. induction l1 as [| h t].
+    rewrite -> nil_app. simpl. rewrite <- app_nil. reflexivity.
+    simpl. rewrite -> IHt. simpl. rewrite -> snoc_app_dist. reflexivity.
+Qed.
+    
 
 (** An exercise about your implementation of [nonzeros]: *)
+
+Lemma nonzeros_dist : forall l1 l2 : natlist,
+  nonzeros (l1 ++ l2) = (nonzeros l1) ++ (nonzeros l2).
+Proof.
+  intros l1 l2. induction l1 as [| h t].
+    reflexivity.
+    destruct h as [| h'].
+      simpl. rewrite -> IHt. reflexivity.
+      simpl. rewrite -> IHt. reflexivity.
+Qed.
 
 Lemma nonzeros_length : forall l1 l2 : natlist,
   nonzeros (l1 ++ l2) = (nonzeros l1) ++ (nonzeros l2).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2. induction l1 as [| h t].
+    reflexivity. 
+    rewrite -> nonzeros_dist. reflexivity.
+Qed.
 (** [] *)
 
 (* ###################################################### *)
