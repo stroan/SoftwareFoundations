@@ -981,7 +981,17 @@ Qed.
 There is a hard way and an easy way to solve this exercise.
 *)
 
-(* FILL IN HERE *)
+
+Theorem rev_injective : forall (l1 l2 : natlist), 
+  rev l1 = rev l2 -> l1 = l2.
+Proof.
+  intros l1 l2 H. SearchAbout rev.
+    replace (l1) with (rev (rev l1)).
+    replace (l2) with (rev (rev l2)).
+    rewrite -> H. reflexivity.
+    rewrite -> rev_involutive. reflexivity.
+    rewrite -> rev_involutive. reflexivity.
+Qed.
 (** [] *)
 
 
