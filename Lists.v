@@ -868,7 +868,13 @@ Qed.
        ([::]), [snoc], and [append] ([++]).  
      - Prove it. *) 
 
-(* FILL IN HERE *)
+Theorem list_design : forall l1 l2 : natlist, forall n : nat,
+  (snoc l1 n) ++ l2 = l1 ++ n :: l2. 
+Proof.
+  intros l1 l2 n. induction l1 as [| h t].
+    reflexivity.
+    simpl. rewrite IHt. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (bag_proofs) *)
@@ -878,7 +884,8 @@ Qed.
 Theorem count_member_nonzero : forall (s : bag),
   ble_nat 1 (count 1 (1 :: s)) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b. simpl. reflexivity.
+Qed.
 
 (** The following lemma about [ble_nat] might help you in the next proof. *)
 
@@ -894,14 +901,76 @@ Proof.
 Theorem remove_decreases_count: forall (s : bag),
   ble_nat (count 0 (remove_one 0 s)) (count 0 s) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros s. induction s as [| h t].
+    reflexivity.
+    destruct h as [| h']. simpl. rewrite -> ble_n_Sn. reflexivity.
+    simpl. rewrite -> IHt. reflexivity.
+Qed. 
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (bag_count_sum) *)  
 (** Write down an interesting theorem about bags involving the
     functions [count] and [sum], and prove it.*)
 
-(* FILL IN HERE *)
+Lemma Sn_Sn_plus : forall n : nat,
+  S n + S n = S (S (n + n)).
+Proof.
+  intros n. simpl. rewrite -> plus_comm. simpl.
+  reflexivity.
+Qed.
+
+Lemma sum_nil : forall s : bag,
+  sum s [] = s.
+Proof.
+  intros s. induction s as [| h t].
+    reflexivity.
+    simpl. rewrite -> IHt. reflexivity.
+Qed.
+
+Lemma sum_nil_r : forall s : bag,
+  sum [] s = s.
+Proof.
+  intros s. reflexivity.
+Qed.
+
+Lemma count_sum_tail_eq : forall s1 s2 : bag, forall n h : nat,
+  count n (sum s1 (h :: s2)) = 
+  match beq_nat h n with
+  | true => S (count n (sum s1 s2))
+  | false => count n (sum s1 s2)
+  end.
+Proof.
+  intros s1 s2 n h. induction s1 as [| h' s1'].
+    reflexivity.
+    simpl. rewrite -> IHs1'. 
+    destruct (beq_nat h n). destruct (beq_nat h' n).
+      reflexivity.
+      reflexivity.
+    destruct (beq_nat h' n).
+      reflexivity.
+      reflexivity.
+Qed.
+
+Lemma count_sum_comm : forall s1 s2 : bag, forall n : nat,
+  count n (sum s1 s2) = count n (sum s2 s1).
+Proof.
+  intros s1 s2 n. induction s1 as [| h t].
+   simpl. rewrite -> sum_nil. reflexivity.
+   simpl. rewrite -> count_sum_tail_eq. rewrite -> IHt.
+     reflexivity.
+Qed.
+
+Theorem bag_count_sum : forall s : bag, forall n : nat,
+  count n (sum s s) = (count n s) + (count n s).
+Proof.
+  intros s n. induction s as [| h t].
+    reflexivity.
+    simpl. rewrite -> count_sum_comm.
+      simpl. destruct (beq_nat h n).
+      rewrite -> Sn_Sn_plus. rewrite <- IHt. reflexivity.
+      rewrite -> IHt. reflexivity.
+Qed.
+  
 (** [] *)
 
 (** **** Exercise: 4 stars, optional (rev_injective) *)
