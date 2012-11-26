@@ -1281,7 +1281,9 @@ Example sillyex1 : forall (X : Type) (x y z : X) (l j : list X),
      y :: l = x :: j ->
      x = y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x y z l j eq1 eq2. inversion eq1. inversion eq2.
+  symmetry. apply H0.
+Qed.
 (** [] *)
 
 Theorem silly6 : forall (n : nat),
@@ -1302,7 +1304,9 @@ Example sillyex2 : forall (X : Type) (x y z : X) (l j : list X),
      y :: l = z :: j ->
      x = z.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x y z l j eq1 eq2.
+  inversion eq1.
+Qed.
 (** [] *)
 
 (** While the injectivity of constructors allows us to reason
@@ -1413,8 +1417,12 @@ Proof.
 Theorem beq_nat_eq' : forall m n,
   beq_nat n m = true -> n = m.
 Proof.
-  intros m. induction m as [| m']. 
-  (* FILL IN HERE *) Admitted.
+  intros m. induction m as [| m'].
+    destruct n. reflexivity.
+      intros contra. inversion contra.
+    destruct n. intros contra. inversion contra.
+      intros H. simpl in H. apply eq_remove_S. apply IHm'. apply H.
+Qed.
 (** [] *)
 
 
