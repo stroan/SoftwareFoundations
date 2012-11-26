@@ -887,6 +887,8 @@ Proof. reflexivity. Qed.
     that takes an [X] and a [Y] and returns a [Y].  Can you think of a
     situation where it would be useful for [X] and [Y] to be
     different? *)
+(* Folding over a list nat to produce a bool indicating whether all
+   values are even *)
 
 (* ###################################################### *)
 (** ** Functions For Constructing Functions *)
@@ -946,7 +948,8 @@ Proof. reflexivity. Qed.
 Theorem override_example : forall (b:bool), 
   (override (constfun b) 3 true) 2 = b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b. reflexivity.
+Qed.
 (** [] *)
 
 (** We'll use function overriding heavily in parts of the rest of the
@@ -1074,7 +1077,10 @@ Theorem silly_ex :
      evenb 3 = true ->
      oddb 4 = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros eq1 eq2.
+  apply eq1.
+  apply eq2.
+Qed.
 (** [] *)
 
 (** To use the [apply] tactic, the (conclusion of the) fact
@@ -1110,10 +1116,10 @@ Theorem rev_exercise1 : forall (l l' : list nat),
      l = rev l' ->
      l' = rev l.
 Proof.
-  (* Hint: you can use [apply] with previously defined lemmas, not
-     just hypotheses in the context.  Remember that [SearchAbout] is
-     your friend. *)
-  (* FILL IN HERE *) Admitted.
+  intros l l' eq.
+  rewrite -> eq.
+  symmetry. apply rev_involutive.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star (apply_rewrite) *)
@@ -1121,7 +1127,12 @@ Proof.
     [rewrite].  Are there situations where both can usefully be
     applied?
 
-  (* FILL IN HERE *)
+  Apply matches a rule against the conclusion of some context, and
+  introduces the premise as a goal. Rewrite matches against the
+  entire piece of context and rewrites the current goal based on
+  the equivalence.
+
+  There are situations where apply = rewrite, reflexivity.
 *)
 (** [] *)
 
@@ -1178,7 +1189,10 @@ Theorem override_neq : forall {X:Type} x1 x2 k1 k2 (f : nat->X),
   beq_nat k2 k1 = false ->
   (override f k2 x2) k1 = x1.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x1 x2 k1 k2 f eq1 eq2.
+  unfold override. rewrite -> eq2.
+  apply eq1.
+Qed.
 (** [] *)
 
 (** As the inverse of [unfold], Coq also provides a tactic
