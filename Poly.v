@@ -313,35 +313,48 @@ Definition list123''' := [1, 2, 3].
     and complete the proofs below. *)
 
 Fixpoint repeat (X : Type) (n : X) (count : nat) : list X := 
-  (* FILL IN HERE *) admit.
+  match count with
+  | O => nil
+  | S count' => n :: (repeat _ n count')
+  end.
 
 Example test_repeat1: 
   repeat bool true 2 = cons true (cons true nil).
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Theorem nil_app : forall X:Type, forall l:list X, 
   app [] l = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X l. reflexivity.
+Qed.
 
 Theorem rev_snoc : forall X : Type, 
                      forall v : X,
                      forall s : list X,
   rev (snoc s v) = v :: (rev s).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X v s. induction s as [| sh st].
+    reflexivity.
+    simpl. rewrite -> IHst. reflexivity.
+Qed.
 
 Theorem rev_involutive : forall X : Type, forall l : list X,
   rev (rev l) = l.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros X l. induction l as [| lh lt].
+    reflexivity.
+    simpl. rewrite -> rev_snoc. rewrite -> IHlt. reflexivity.
+Qed.
 
 Theorem snoc_with_append : forall X : Type, 
                          forall l1 l2 : list X,
                          forall v : X,
   snoc (l1 ++ l2) v = l1 ++ (snoc l2 v).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X l1 l2 v. induction l1 as [| l1h l1t].
+    reflexivity.
+    simpl. rewrite -> IHl1t. reflexivity.
+Qed.
 (** [] *)
 
 (* ###################################################### *)
