@@ -1750,7 +1750,12 @@ Theorem override_same : forall {X:Type} x1 k1 k2 (f : nat->X),
   f k1 = x1 -> 
   (override f k1 x1) k2 = f k2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x1 k1 k2 f eq1. unfold override. remember (beq_nat k1 k2) as eq2.
+  destruct eq2. 
+    rewrite <- eq1. apply beq_nat_eq in Heqeq2. rewrite -> Heqeq2. reflexivity.
+    reflexivity.
+Qed.
+    
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (filter_exercise) *)
@@ -1763,7 +1768,12 @@ Theorem filter_exercise : forall (X : Type) (test : X -> bool)
      filter test l = x :: lf ->
      test x = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X test x l. induction l as [| lh lt].
+    simpl. intros lf eq1. inversion eq1.
+    intros lf eq1. simpl in eq1. remember (test lh) as t.
+    destruct t. inversion eq1. rewrite <- H0. symmetry. apply Heqt.
+      apply IHlt in eq1. apply eq1.
+Qed.
 (** [] *)
 
 (* ###################################################### *)
@@ -1821,20 +1831,33 @@ Example trans_eq_exercise : forall (n m o p : nat),
      (n + p) = m ->
      (n + p) = (minustwo o). 
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m o p eq1 eq2.
+  apply trans_eq with m. apply eq2. apply eq1.
+Qed.
 
 Theorem beq_nat_trans : forall n m p,
   true = beq_nat n m ->
   true = beq_nat m p ->
   true = beq_nat n p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p eq1 eq2.
+  apply beq_nat_eq in eq1. apply beq_nat_eq in eq2.
+  rewrite -> eq1. rewrite -> eq2. apply beq_nat_refl.
+Qed.
 
 Theorem override_permute : forall {X:Type} x1 x2 k1 k2 k3 (f : nat->X),
   false = beq_nat k2 k1 ->
   (override (override f k2 x2) k1 x1) k3 = (override (override f k1 x1) k2 x2) k3.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x1 x2 k1 k2 k3 f eq1.
+  unfold override. remember (beq_nat k1 k3) as b13. remember (beq_nat k2 k3) as b23.
+  
+    destruct b13. destruct b23. rewrite -> beq_nat_sym in Heqb23.
+    apply beq_nat_trans with (n:=k1) in Heqb23.
+    rewrite -> beq_nat_sym in Heqb23. rewrite <- Heqb23 in eq1. inversion eq1.
+    apply Heqb13. reflexivity.
+    destruct b23. reflexivity. reflexivity.
+Qed.
 (** [] *)
 
 (* ################################################################## *)
