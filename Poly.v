@@ -1439,12 +1439,18 @@ Qed.
 Theorem beq_nat_0_l : forall n,
   true = beq_nat 0 n -> 0 = n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n eq1. destruct n.
+    reflexivity.
+    inversion eq1.
+Qed.
 
 Theorem beq_nat_0_r : forall n,
   true = beq_nat 0 n -> 0 = n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n eq1. destruct n.
+    reflexivity.
+    inversion eq1.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars (apply_exercise2) *)
@@ -1457,7 +1463,14 @@ Theorem beq_nat_sym : forall (n m : nat),
   beq_nat n m = beq_nat m n.
 Proof.
   intros n. induction n as [| n'].
-  (* FILL IN HERE *) Admitted.
+   destruct m.
+     reflexivity.
+     reflexivity.
+   destruct m.
+     reflexivity. 
+     simpl. apply IHn'.
+Qed.
+     
 (** [] *)
 
 (** **** Exercise: 3 stars (beq_nat_sym_informal) *)
@@ -1531,8 +1544,15 @@ Theorem plus_n_n_injective : forall n m,
      n = m.
 Proof.
   intros n. induction n as [| n'].
-    (* Hint: use the plus_n_Sm lemma *)
-    (* FILL IN HERE *) Admitted.
+    destruct m.
+      reflexivity.
+      simpl. intros contra. inversion contra.
+    destruct m.
+      simpl. intros contra. inversion contra.
+      simpl. rewrite <- plus_n_Sm. rewrite <- plus_n_Sm.
+      intro eq1. inversion eq1. apply IHn' in H0.
+      rewrite -> H0. reflexivity.
+Qed.
 (** [] *)
 
 (* ###################################################### *)
