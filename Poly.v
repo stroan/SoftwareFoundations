@@ -1590,18 +1590,31 @@ Proof.
 Theorem override_shadow : forall {X:Type} x1 x2 k1 k2 (f : nat->X),
   (override (override f k1 x2) k1 x1) k2 = (override f k1 x1) k2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x1 x2 k1 k2 f.
+  unfold override. destruct (beq_nat k1 k2).
+    reflexivity.
+    reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, recommended (combine_split) *)
-(* 
+
+Theorem cons_inj : forall X (l1 l2 : list X) h,
+  l1 = l2 -> h :: l1 =  h :: l2.
+Proof.
+  intros X l1 l2 h eq. inversion eq. reflexivity.
+Qed.
+
 Theorem combine_split : forall X Y (l : list (X * Y)) l1 l2,
   split l = (l1, l2) ->
   combine l1 l2 = l.
 Proof.
   intros X Y l. induction l as [| [x y] l'].
-  (* FILL IN HERE *) Admitted.
-*)
+    unfold split. intros l1 l2 eq1. inversion eq1. reflexivity.
+    simpl. destruct (split l'). intros l1 l2 eq1. inversion eq1.
+    simpl. apply cons_inj. apply IHl'. reflexivity.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (split_combine) *)
@@ -1616,7 +1629,37 @@ Proof.
     induction hypothesis general by not doing [intros] on more things
     than necessary.) *)
 
-(* FILL IN HERE *) 
+Theorem pair_list_cons : forall X Y (l0 l2 : list X) (l1 l3 : list Y) x y,
+  (l0, l1) = (l2, l3) ->
+  (x :: l0, y :: l1) = (x :: l2, y :: l3).
+Proof.
+  intros X Y l0 l2 l1 l3 x y eq. inversion eq. reflexivity.
+Qed. 
+
+Theorem split_combine : forall X Y (l : list (X * Y)) l1 l2 ,
+  length l1 = length l2 ->
+  combine l1 l2 = l -> 
+  split l = (l1, l2).
+Proof.
+  intros X Y l. induction l as [| lh lt].
+    intros l1 l2 eq1 eq2.
+      destruct l1. destruct l2.
+        reflexivity.
+        simpl in eq1. inversion eq1.
+        destruct l2.
+        simpl in eq1. inversion eq1.
+        simpl in eq2. inversion eq2.
+    intros l1 l2 eq1 eq2.
+      simpl. destruct lh. destruct (split lt).
+        destruct l1. destruct l2.
+          simpl in eq2. inversion eq2.
+          simpl in eq1. inversion eq1.
+        destruct l2.
+          simpl in eq1. inversion eq1.
+          simpl in eq2. inversion eq2.
+          apply pair_list_cons. apply IHlt. inversion eq1. reflexivity.
+          apply H2.
+Qed.
 (** [] *)
 
 (* ###################################################### *)
