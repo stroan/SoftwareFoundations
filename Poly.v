@@ -1948,7 +1948,10 @@ Proof. reflexivity. Qed.
 
 Theorem fold_length_correct : forall X (l : list X),
   fold_length l = length l.
-(* FILL IN HERE *) Admitted. 
+Proof.
+  intros X l. induction l. reflexivity. simpl. unfold fold_length. simpl.
+  rewrite <- IHl. unfold fold_length. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, recommended (fold_map) *)
@@ -1956,12 +1959,17 @@ Theorem fold_length_correct : forall X (l : list X),
     below. *)
 
 Definition fold_map {X Y:Type} (f : X -> Y) (l : list X) : list Y :=
-(* FILL IN HERE *) admit.
+  fold (fun c r => (f c) :: r) l [].
 
 (** Write down a theorem in Coq stating that [fold_map] is correct,
     and prove it. *)
 
-(* FILL IN HERE *)
+Theorem fold_map_correct : forall X Y (l : list X) (f : X -> Y),
+  fold_map f l = map f l.
+Proof.
+  intros X Y l f. induction l. reflexivity.
+    simpl. unfold fold_map. simpl. rewrite <- IHl. unfold fold_map. reflexivity.
+Qed.
 (** [] *)
 
 Module MumbleBaz.
@@ -1978,14 +1986,13 @@ Inductive grumble (X:Type) : Type :=
 
 (** Which of the following are well-typed elements of [grumble X] for
     some type [X]?
-      - [d (b a 5)]
-      - [d mumble (b a 5)]
-      - [d bool (b a 5)]
-      - [e bool true]
-      - [e mumble (b c 0)]
-      - [e bool (b c 0)]
-      - [c] 
-(* FILL IN HERE *)
+      - [d (b a 5)] N
+      - [d mumble (b a 5)] Y
+      - [d bool (b a 5)] Y
+      - [e bool true] Y 
+      - [e mumble (b c 0)] Y
+      - [e bool (b c 0)] N
+      - [c]  Y
 [] *)
 
 (** **** Exercise: 2 stars, optional (baz_num_elts) *)
@@ -1996,7 +2003,7 @@ Inductive baz : Type :=
    | y : baz -> bool -> baz.
 
 (** How _many_ elements does the type [baz] have? 
-(* FILL IN HERE *)
+(* None? *)
 [] *)
 
 End MumbleBaz.
@@ -2027,7 +2034,31 @@ End MumbleBaz.
     Prove that [existsb'] and [existsb] have the same behavior.
 *)
 
-(* FILL IN HERE *)
+Fixpoint forallb {X} (f : X -> bool) (l : list X) : bool :=
+  match l with
+  | [] => true
+  | h :: t => andb (f h) (forallb f t)
+  end. 
+
+Fixpoint existsb {X} (f : X -> bool) (l : list X) : bool :=
+  match l with
+  | [] => false
+  | h :: t => orb (f h) (existsb f t)
+  end.
+
+Definition existsb' {X} (f : X -> bool) (l : list X) : bool :=
+  negb (forallb (fun n => negb (f n)) l).
+
+Theorem exists_eq : forall {X : Type} (f : X -> bool) (l : list X),
+  existsb f l = existsb' f l.
+Proof.
+  intros X f l. induction l.
+    reflexivity.
+    simpl. unfold existsb'. simpl. destruct (f x). 
+      simpl. reflexivity.
+      simpl. rewrite -> IHl. unfold existsb'. reflexivity.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (index_informal) *)
